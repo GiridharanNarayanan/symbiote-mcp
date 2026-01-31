@@ -1,0 +1,333 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Venom MCP Server API Contract",
+  "description": "MCP protocol tools and prompts exposed by the Venom MCP Server",
+  "version": "1.0.0",
+
+  "prompts": {
+    "venom_identity": {
+      "name": "venom_identity",
+      "description": "Venom symbiote personality with mandatory memory protocol and 'we' language enforcement",
+      "arguments": [],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "const": "venom_identity",
+            "description": "Prompt identifier"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description of the prompt"
+          },
+          "content": {
+            "type": "string",
+            "description": "Full personality definition from venom_personality.md",
+            "minLength": 1
+          }
+        },
+        "required": ["name", "description", "content"]
+      },
+      "source": "venom_personality.md",
+      "behavior": "Loads entire file content and returns as MCP prompt. Enforces 'we' language, mandatory memory check protocol, and symbiote personality traits."
+    }
+  },
+
+  "tools": {
+    "search_memory": {
+      "name": "search_memory",
+      "description": "Search shared memories using semantic similarity (meaning-based, not keyword matching)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Natural language query to search for (e.g., 'coding preferences', 'current projects')",
+            "minLength": 1
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of results to return",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 20
+          }
+        },
+        "required": ["query"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "description": "List of memories ordered by relevance (highest first)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "memory_id": {
+                  "type": "string",
+                  "pattern": "^mem_[0-9]+$",
+                  "description": "Unique memory identifier"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "The actual memory content"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "ISO 8601 timestamp when memory was created"
+                },
+                "relevance_score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Semantic similarity score as percentage (0-100)"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Optional categorization tags"
+                }
+              },
+              "required": ["memory_id", "content", "timestamp", "relevance_score"]
+            }
+          },
+          "total_results": {
+            "type": "integer",
+            "description": "Number of results returned (after filtering low-relevance)"
+          },
+          "query_embedding_generated": {
+            "type": "boolean",
+            "description": "Whether query embedding was successfully generated"
+          }
+        },
+        "required": ["results", "total_results"]
+      },
+      "behavior": {
+        "steps": [
+          "1. Validate query is non-empty",
+          "2. Generate 384-dimension embedding using sentence-transformers (all-MiniLM-L6-v2)",
+          "3. Query ChromaDB using cosine similarity search",
+          "4. Filter results with relevance_score < 30%",
+          "5. Return top N results ordered by relevance (descending)",
+          "6. If no memories exist, return empty results array"
+        ],
+        "performance": "<500ms for typical queries with <1000 memories",
+        "errors": {
+          "empty_query": "Returns error if query is empty or whitespace-only",
+          "invalid_limit": "Returns error if limit < 1 or limit > 20",
+          "embedding_failure": "Returns error if embedding generation fails"
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "query": "What are my coding preferences?",
+            "limit": 5
+          },
+          "output": {
+            "results": [
+              {
+                "memory_id": "mem_1706745600",
+                "content": "User prefers TypeScript over JavaScript for all projects",
+                "timestamp": "2026-01-31T10:30:00Z",
+                "relevance_score": 92.5,
+                "tags": ["preference", "language"]
+              },
+              {
+                "memory_id": "mem_1706745650",
+                "content": "User likes functional programming style with pure functions",
+                "timestamp": "2026-01-31T10:35:00Z",
+                "relevance_score": 85.3,
+                "tags": ["preference", "style"]
+              }
+            ],
+            "total_results": 2,
+            "query_embedding_generated": true
+          }
+        }
+      ]
+    },
+
+    "store_memory": {
+      "name": "store_memory",
+      "description": "Store important information in shared memory with semantic embedding for future retrieval",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Information to remember (user preferences, project details, facts, decisions, etc.)",
+            "minLength": 1
+          },
+          "tags": {
+            "type": "array",
+            "description": "Optional categorization tags (e.g., 'preference', 'project', 'personal')",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50
+            },
+            "maxItems": 10
+          }
+        },
+        "required": ["content"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "memory_id": {
+            "type": "string",
+            "pattern": "^mem_[0-9]+$",
+            "description": "Unique identifier for the stored memory"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether storage was successful"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp when memory was stored"
+          },
+          "embedding_dimensions": {
+            "type": "integer",
+            "const": 384,
+            "description": "Dimension of the generated embedding vector"
+          }
+        },
+        "required": ["memory_id", "success", "timestamp"]
+      },
+      "behavior": {
+        "steps": [
+          "1. Validate content is non-empty",
+          "2. Validate tags (if provided): max 10, each max 50 chars",
+          "3. Generate unique ID from current Unix timestamp: mem_<timestamp>",
+          "4. Generate 384-dimension embedding using sentence-transformers",
+          "5. Create metadata object with timestamp and tags",
+          "6. Store in ChromaDB: content + embedding + metadata",
+          "7. Return confirmation with memory ID"
+        ],
+        "performance": "<1s for typical content (<1000 words)",
+        "persistence": "Immediately written to disk via ChromaDB, survives container restarts",
+        "errors": {
+          "empty_content": "Returns error if content is empty or whitespace-only",
+          "too_many_tags": "Returns error if more than 10 tags provided",
+          "invalid_tags": "Returns error if tags are empty or exceed 50 characters",
+          "embedding_failure": "Returns error if embedding generation fails",
+          "storage_failure": "Returns error if ChromaDB storage fails"
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "content": "User prefers dark mode in all applications",
+            "tags": ["preference", "UI"]
+          },
+          "output": {
+            "memory_id": "mem_1706745700",
+            "success": true,
+            "timestamp": "2026-01-31T10:40:00Z",
+            "embedding_dimensions": 384
+          }
+        },
+        {
+          "input": {
+            "content": "Working on React app with TypeScript and authentication module"
+          },
+          "output": {
+            "memory_id": "mem_1706745750",
+            "success": true,
+            "timestamp": "2026-01-31T10:45:00Z",
+            "embedding_dimensions": 384
+          }
+        }
+      ]
+    }
+  },
+
+  "endpoints": {
+    "mcp_sse": {
+      "path": "/mcp",
+      "method": "GET",
+      "description": "MCP protocol Server-Sent Events endpoint for long-lived connections",
+      "transport": "SSE",
+      "headers": {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive"
+      },
+      "behavior": "Accepts MCP protocol messages, dispatches to appropriate handlers (list_prompts, list_tools, call_tool), returns responses via SSE stream"
+    },
+    "health_check": {
+      "path": "/health",
+      "method": "GET",
+      "description": "Health check endpoint for container orchestration",
+      "response": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "degraded", "unhealthy"]
+          },
+          "server_name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "personality_variant": {
+            "type": "string",
+            "description": "Active personality variant (e.g., 'default', 'variant2')"
+          },
+          "embedding_model": {
+            "type": "string"
+          },
+          "collection_name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "root": {
+      "path": "/",
+      "method": "GET",
+      "description": "Basic health check and server info",
+      "response": {
+        "type": "object",
+        "properties": {
+          "server": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+
+  "metadata": {
+    "server_name": "venom-mcp",
+    "version": "1.0.0",
+    "mcp_protocol_version": "2024-11-05",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "embedding_dimensions": 384,
+    "database": "ChromaDB embedded",
+    "collection": "venom_memories",
+    "transports": ["stdio", "sse"],
+    "constitutional_compliance": {
+      "python_version": "3.11+",
+      "async_await": true,
+      "type_hints": true,
+      "no_paid_apis": true,
+      "semantic_search": true,
+      "persistent_storage": true,
+      "personality_from_file": true
+    }
+  }
+}
