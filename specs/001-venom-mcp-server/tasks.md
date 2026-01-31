@@ -82,16 +82,16 @@ Foundational (Phase 2)
 **Goal**: Establish project structure, dependencies, and configuration
 
 **Tasks**:
-- [ ] T001 Create project directory structure per plan.md (src/, tests/, docs/learning/)
-- [ ] T002 [P] Create requirements.txt with dependencies: mcp, fastapi, uvicorn[standard], sentence-transformers, chromadb, python-dotenv
-- [ ] T003 [P] Create .gitignore for Python, ChromaDB data, .env files, __pycache__
-- [ ] T004 [P] Create .env.example with PORT, HOST, CHROMADB_PATH, EMBEDDING_MODEL, COLLECTION_NAME, VENOM_PERSONALITY
-- [ ] T005 [P] Create README.md with project overview and setup instructions
-- [ ] T006 Create src/__init__.py (empty)
-- [ ] T007 [P] Create src/memory/__init__.py (empty)
-- [ ] T008 [P] Create src/prompts/__init__.py (empty)
-- [ ] T009 [P] Create tests/manual_testing.md with test scenarios template
-- [ ] T010 [P] Create docs/learning/ directory structure (00-overview.md through 99-glossary.md placeholders)
+- [X] T001 Create project directory structure per plan.md (src/, tests/, docs/learning/)
+- [X] T002 [P] Create requirements.txt with dependencies: mcp, fastapi, uvicorn[standard], sentence-transformers, chromadb, python-dotenv
+- [X] T003 [P] Create .gitignore for Python, ChromaDB data, .env files, __pycache__
+- [X] T004 [P] Create .env.example with PORT, HOST, CHROMADB_PATH, EMBEDDING_MODEL, COLLECTION_NAME, VENOM_PERSONALITY
+- [X] T005 [P] Create README.md with project overview and setup instructions
+- [X] T006 Create src/__init__.py (empty)
+- [X] T007 [P] Create src/memory/__init__.py (empty)
+- [X] T008 [P] Create src/prompts/__init__.py (empty)
+- [X] T009 [P] Create tests/manual_testing.md with test scenarios template
+- [X] T010 [P] Create docs/learning/ directory structure (00-overview.md through 99-glossary.md placeholders)
 
 **Parallel Opportunities**: T002-T005, T007-T010 (all different files)
 
@@ -110,9 +110,9 @@ cat requirements.txt .gitignore .env.example README.md
 **Goal**: Build core infrastructure needed by all user stories
 
 **Tasks**:
-- [ ] T011 Implement src/config.py with environment variable loading and type hints (Config dataclass)
-- [ ] T012 [P] Implement src/memory/embeddings.py with sentence-transformers model loading and encode function (async)
-- [ ] T013 [P] Implement src/memory/store.py with ChromaDB initialization, collection creation, and CRUD operations (async)
+- [X] T011 Implement src/config.py with environment variable loading and type hints (Config dataclass)
+- [X] T012 [P] Implement src/memory/embeddings.py with sentence-transformers model loading and encode function (async)
+- [X] T013 [P] Implement src/memory/store.py with ChromaDB initialization, collection creation, and CRUD operations (async)
 - [ ] T014 Verify embedding model downloads successfully (run embeddings.py standalone test)
 - [ ] T015 Verify ChromaDB creates collection and persists data (run store.py standalone test)
 
@@ -143,13 +143,13 @@ python -c "from src.memory.store import init_collection; import asyncio; asyncio
 - ✅ search_memory and store_memory tools are available
 
 **Tasks**:
-- [ ] T016 [US1] Implement src/server.py with FastAPI app initialization and basic routes (/, /health)
-- [ ] T017 [US1] Add MCP protocol handler to src/server.py with SSE endpoint at /mcp
-- [ ] T018 [P] [US1] Implement MCP list_prompts handler in src/server.py (returns venom_identity)
-- [ ] T019 [P] [US1] Implement MCP list_tools handler in src/server.py (returns search_memory, store_memory)
-- [ ] T020 [US1] Implement health check logic in src/server.py (includes personality_variant, embedding_model, collection_name)
-- [ ] T021 [US1] Add async startup event to pre-load embedding model and initialize ChromaDB
-- [ ] T022 [US1] Test server startup and verify MCP endpoints respond correctly
+- [X] T016 [US1] Implement src/server.py with FastAPI app initialization and basic routes (/, /health)
+- [X] T017 [US1] Add MCP protocol handler to src/server.py with SSE endpoint at /mcp
+- [X] T018 [P] [US1] Implement MCP list_prompts handler in src/server.py (returns venom_identity)
+- [X] T019 [P] [US1] Implement MCP list_tools handler in src/server.py (returns search_memory, store_memory)
+- [X] T020 [US1] Implement health check logic in src/server.py (includes personality_variant, embedding_model, collection_name)
+- [X] T021 [US1] Add async startup event to pre-load embedding model and initialize ChromaDB
+- [X] T022 [US1] Test server startup and verify MCP endpoints respond correctly
 
 **Dependencies**: Requires Phase 2 (T011-T015)
 
