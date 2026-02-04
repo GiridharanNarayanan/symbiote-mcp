@@ -55,3 +55,6 @@ data/
 
 # ChromaDB specific
 chroma.sqlite3
+
+# Learning documentation (local only)
+docs/
