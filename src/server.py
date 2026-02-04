@@ -1,4 +1,4 @@
-"""Venom MCP Server - Main FastAPI application with MCP protocol support.
+"""Symbiote MCP Server - Main FastAPI application with MCP protocol support.
 
 This server provides:
 - MCP protocol via SSE (/mcp endpoint)
@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
     global embedding_service, memory_store, venom_prompt, mcp_server
 
     print("=" * 60)
-    print("Venom MCP Server - Starting")
+    print("Symbiote MCP Server - Starting")
     print("=" * 60)
 
     # Initialize embedding service
@@ -64,7 +64,7 @@ async def lifespan(app: FastAPI):
     venom_prompt = VenomPrompt(personality_file_path=personality_path)
 
     # Initialize MCP server
-    mcp_server = Server("venom-mcp")
+    mcp_server = Server("symbiote-mcp")
 
     # Register MCP prompts
     @mcp_server.list_prompts()
@@ -180,12 +180,12 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
-    print("Shutting down Venom MCP Server...")
+    print("Shutting down Symbiote MCP Server...")
 
 
 # Create FastAPI app
 app = FastAPI(
-    title="Venom MCP Server",
+    title="Symbiote MCP Server",
     description="Cross-platform AI consciousness through persistent semantic memory",
     version="1.0.0",
     lifespan=lifespan,
@@ -196,7 +196,7 @@ app = FastAPI(
 async def root() -> JSONResponse:
     """Root endpoint - basic server info."""
     return JSONResponse({
-        "server": "venom-mcp",
+        "server": "symbiote-mcp",
         "status": "running",
         "version": "1.0.0",
     })
@@ -207,7 +207,7 @@ async def health() -> JSONResponse:
     """Health check endpoint for container orchestration."""
     return JSONResponse({
         "status": "healthy",
-        "server_name": "venom-mcp",
+        "server_name": "symbiote-mcp",
         "version": "1.0.0",
         "personality_variant": config.venom_personality,
         "embedding_model": config.embedding_model,
@@ -250,7 +250,7 @@ async def run_stdio():
     )
     personality_path = config.get_personality_file_path()
     venom_prompt = VenomPrompt(personality_file_path=personality_path)
-    mcp_server = Server("venom-mcp")
+    mcp_server = Server("symbiote-mcp")
 
     # Register handlers (same as FastAPI)
     @mcp_server.list_prompts()

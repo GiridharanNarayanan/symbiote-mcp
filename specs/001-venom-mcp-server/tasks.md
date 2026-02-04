@@ -1,7 +1,7 @@
-# Implementation Tasks: Venom MCP Server
+# Implementation Tasks: Symbiote MCP Server
 
-**Feature**: Venom MCP Server
-**Branch**: `001-venom-mcp-server`
+**Feature**: Symbiote MCP Server
+**Branch**: `001-symbiote-mcp-server`
 **Generated**: 2026-01-31
 **Design Docs**: [plan.md](./plan.md) | [spec.md](./spec.md) | [data-model.md](./data-model.md) | [contracts/](./contracts/)
 
@@ -163,7 +163,7 @@ uvicorn src.server:app --host 0.0.0.0 --port 8000
 # Test health
 curl http://localhost:8000/health
 
-# Expected: {"status": "healthy", "server_name": "venom-mcp", ...}
+# Expected: {"status": "healthy", "server_name": "symbiote-mcp", ...}
 
 # Test MCP connection (requires MCP client like Claude Desktop)
 # Add to Claude Desktop config, verify connection and prompts/tools listed
@@ -351,7 +351,7 @@ VENOM_PERSONALITY=invalid python src/server.py
 - [ ] T054 [US6] Add sentence-transformers model pre-download to Dockerfile (cache during build)
 - [ ] T055 [US6] Add COPY commands for src/, venom_personality*.md, requirements.txt to Dockerfile
 - [ ] T056 [US6] Set WORKDIR /app, expose port 8000, add CMD for uvicorn in Dockerfile
-- [ ] T057 [US6] Build Docker image locally: docker build -t venom-mcp:latest .
+- [ ] T057 [US6] Build Docker image locally: docker build -t symbiote-mcp:latest .
 - [ ] T058 [US6] Test Docker container locally: docker run with volume mount, verify health endpoint
 - [ ] T059 [US6] Create deployment/azure-deploy.sh script with Azure CLI commands
 - [ ] T060 [US6] Add Azure resource group creation to deploy script
@@ -373,8 +373,8 @@ VENOM_PERSONALITY=invalid python src/server.py
 **Independent Test**:
 ```bash
 # Local Docker test
-docker build -t venom-mcp:latest .
-docker run -p 8000:8000 -v $(pwd)/data:/app/data venom-mcp:latest
+docker build -t symbiote-mcp:latest .
+docker run -p 8000:8000 -v $(pwd)/data:/app/data symbiote-mcp:latest
 curl http://localhost:8000/health
 
 # Azure deployment
@@ -382,7 +382,7 @@ cd deployment
 ./azure-deploy.sh
 
 # Test deployed app
-curl https://venom-mcp.<random>.azurecontainerapps.io/health
+curl https://symbiote-mcp.<random>.azurecontainerapps.io/health
 
 # Verify costs in Azure portal
 # Expected: $0/month (within free tier)

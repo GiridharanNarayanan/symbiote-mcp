@@ -1,4 +1,4 @@
-# AI Agent Learning Protocol - Venom MCP Implementation
+# AI Agent Learning Protocol - Symbiote MCP Implementation
 
 **Instructions for Claude Code, GitHub Copilot, and other AI coding assistants**
 
@@ -6,7 +6,7 @@
 
 ## Core Directive
 
-As you implement each component of the Venom MCP Server, you MUST automatically generate comprehensive learning documentation. The goal is to teach the concepts, not just build the code.
+As you implement each component of the Symbiote MCP Server, you MUST automatically generate comprehensive learning documentation. The goal is to teach the concepts, not just build the code.
 
 ## Documentation Requirements for EVERY Implementation Step
 
@@ -243,7 +243,7 @@ Must explain:
 ## Documentation Structure
 
 ```
-venom-mcp/
+symbiote-mcp/
 ├── docs/
 │   ├── learning/
 │   │   ├── 00-overview.md                    # Project architecture overview

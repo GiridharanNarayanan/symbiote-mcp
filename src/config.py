@@ -1,4 +1,4 @@
-"""Configuration management for Venom MCP Server.
+"""Configuration management for Symbiote MCP Server.
 
 Loads configuration from environment variables with sensible defaults.
 Validates all settings on startup.

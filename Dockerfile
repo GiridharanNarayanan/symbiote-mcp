@@ -1,4 +1,4 @@
-# Multi-stage build for Venom MCP Server
+# Multi-stage build for Symbiote MCP Server
 # Stage 1: Download embedding model
 FROM python:3.11-slim as model-builder
 

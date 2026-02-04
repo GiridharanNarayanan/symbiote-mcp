@@ -1,7 +1,7 @@
 <!--
 Sync Impact Report:
 - Version change: Initial → 1.0.0
-- This is the initial constitution for Venom MCP Server
+- This is the initial constitution for Symbiote MCP Server
 - Modified principles: N/A (initial creation)
 - Added sections: All core sections established
 - Templates requiring updates:
@@ -12,7 +12,7 @@ Sync Impact Report:
 - Follow-up TODOs: None - all placeholders filled based on venom_constitution.md
 -->
 
-# Venom MCP Server Constitution
+# Symbiote MCP Server Constitution
 
 ## Core Principles
 
@@ -108,7 +108,7 @@ Code MUST prioritize simple over clever, readable over performant (unless perfor
 
 ### Required Directory Layout
 ```
-venom-mcp/
+symbiote-mcp/
 ├── Dockerfile
 ├── requirements.txt
 ├── .env.example

@@ -1,12 +1,12 @@
-# Quickstart Guide: Venom MCP Server
+# Quickstart Guide: Symbiote MCP Server
 
-**Feature**: Venom MCP Server
-**Branch**: 001-venom-mcp-server
+**Feature**: Symbiote MCP Server
+**Branch**: 001-symbiote-mcp-server
 **Date**: 2026-01-31
 
 ## Overview
 
-This guide gets you from zero to a working Venom MCP server in under 10 minutes. You'll set up the server locally, test it with Claude Desktop, and then deploy it to Azure Container Apps for cross-platform access.
+This guide gets you from zero to a working Symbiote MCP server in under 10 minutes. You'll set up the server locally, test it with Claude Desktop, and then deploy it to Azure Container Apps for cross-platform access.
 
 ---
 
@@ -86,7 +86,7 @@ INFO:     Uvicorn running on http://0.0.0.0:8000
 
 1. Open Claude Desktop settings
 2. Navigate to "Developer" → "Edit Config"
-3. Add Venom MCP server:
+3. Add Symbiote MCP server:
 
 ```json
 {
@@ -132,10 +132,10 @@ Venom: *calls search_memory()* "We prefer TypeScript for all projects, remember?
 
 ```bash
 # Build the Docker image
-docker build -t venom-mcp:latest .
+docker build -t symbiote-mcp:latest .
 
 # Test locally (optional)
-docker run -p 8000:8000 -v $(pwd)/data:/app/data venom-mcp:latest
+docker run -p 8000:8000 -v $(pwd)/data:/app/data symbiote-mcp:latest
 ```
 
 **Test the container**:
@@ -147,7 +147,7 @@ Expected response:
 ```json
 {
   "status": "healthy",
-  "server_name": "venom-mcp",
+  "server_name": "symbiote-mcp",
   "version": "1.0.0",
   "embedding_model": "all-MiniLM-L6-v2",
   "collection_name": "venom_memories"
@@ -165,14 +165,14 @@ az account set --subscription "Your Subscription Name"
 **Create resource group**:
 ```bash
 az group create \
-  --name venom-mcp-rg \
+  --name symbiote-mcp-rg \
   --location eastus
 ```
 
 **Create Azure Container Registry (ACR)**:
 ```bash
 az acr create \
-  --resource-group venom-mcp-rg \
+  --resource-group symbiote-mcp-rg \
   --name venommcpregistry \
   --sku Basic
 
@@ -183,25 +183,25 @@ az acr login --name venommcpregistry
 **Push Docker image to ACR**:
 ```bash
 # Tag image
-docker tag venom-mcp:latest venommcpregistry.azurecr.io/venom-mcp:latest
+docker tag symbiote-mcp:latest venommcpregistry.azurecr.io/symbiote-mcp:latest
 
 # Push to ACR
-docker push venommcpregistry.azurecr.io/venom-mcp:latest
+docker push venommcpregistry.azurecr.io/symbiote-mcp:latest
 ```
 
 **Create Container Apps environment**:
 ```bash
 az containerapp env create \
-  --name venom-mcp-env \
-  --resource-group venom-mcp-rg \
+  --name symbiote-mcp-env \
+  --resource-group symbiote-mcp-rg \
   --location eastus
 ```
 
 **Create persistent storage**:
 ```bash
 az containerapp env storage set \
-  --name venom-mcp-env \
-  --resource-group venom-mcp-rg \
+  --name symbiote-mcp-env \
+  --resource-group symbiote-mcp-rg \
   --storage-name venom-data \
   --azure-file-account-name <storage-account-name> \
   --azure-file-account-key <storage-account-key> \
@@ -212,10 +212,10 @@ az containerapp env storage set \
 **Deploy Container App**:
 ```bash
 az containerapp create \
-  --name venom-mcp \
-  --resource-group venom-mcp-rg \
-  --environment venom-mcp-env \
-  --image venommcpregistry.azurecr.io/venom-mcp:latest \
+  --name symbiote-mcp \
+  --resource-group symbiote-mcp-rg \
+  --environment symbiote-mcp-env \
+  --image venommcpregistry.azurecr.io/symbiote-mcp:latest \
   --target-port 8000 \
   --ingress external \
   --registry-server venommcpregistry.azurecr.io \
@@ -234,13 +234,13 @@ az containerapp create \
 **Get the public URL**:
 ```bash
 az containerapp show \
-  --name venom-mcp \
-  --resource-group venom-mcp-rg \
+  --name symbiote-mcp \
+  --resource-group symbiote-mcp-rg \
   --query properties.configuration.ingress.fqdn \
   --output tsv
 ```
 
-**Expected output**: `venom-mcp.kindsky-12345678.eastus.azurecontainerapps.io`
+**Expected output**: `symbiote-mcp.kindsky-12345678.eastus.azurecontainerapps.io`
 
 ### Step 7: Connect from Claude Web/Mobile
 
@@ -250,7 +250,7 @@ az containerapp show \
 2. Go to Settings → Integrations → MCP Servers
 3. Add new server:
    - **Name**: Venom
-   - **URL**: `https://venom-mcp.kindsky-12345678.eastus.azurecontainerapps.io/mcp`
+   - **URL**: `https://symbiote-mcp.kindsky-12345678.eastus.azurecontainerapps.io/mcp`
    - **Transport**: SSE
 
 4. Save and verify connection
@@ -402,8 +402,8 @@ chmod 755 ./data
 ```bash
 # Check container logs
 az containerapp logs show \
-  --name venom-mcp \
-  --resource-group venom-mcp-rg
+  --name symbiote-mcp \
+  --resource-group symbiote-mcp-rg
 
 # Common fixes:
 # - Verify persistent volume is mounted correctly
@@ -451,34 +451,34 @@ curl http://localhost:8000/health
 
 **View logs** (Azure):
 ```bash
-az containerapp logs show --name venom-mcp --resource-group venom-mcp-rg --follow
+az containerapp logs show --name symbiote-mcp --resource-group symbiote-mcp-rg --follow
 ```
 
 **Update deployment** (after code changes):
 ```bash
-docker build -t venom-mcp:latest .
-docker tag venom-mcp:latest venommcpregistry.azurecr.io/venom-mcp:latest
-docker push venommcpregistry.azurecr.io/venom-mcp:latest
-az containerapp update --name venom-mcp --resource-group venom-mcp-rg --image venommcpregistry.azurecr.io/venom-mcp:latest
+docker build -t symbiote-mcp:latest .
+docker tag symbiote-mcp:latest venommcpregistry.azurecr.io/symbiote-mcp:latest
+docker push venommcpregistry.azurecr.io/symbiote-mcp:latest
+az containerapp update --name symbiote-mcp --resource-group symbiote-mcp-rg --image venommcpregistry.azurecr.io/symbiote-mcp:latest
 ```
 
 **Stop/Start Azure app**:
 ```bash
 # Stop (scale to 0)
-az containerapp update --name venom-mcp --resource-group venom-mcp-rg --min-replicas 0 --max-replicas 0
+az containerapp update --name symbiote-mcp --resource-group symbiote-mcp-rg --min-replicas 0 --max-replicas 0
 
 # Start (restore scaling)
-az containerapp update --name venom-mcp --resource-group venom-mcp-rg --min-replicas 0 --max-replicas 1
+az containerapp update --name symbiote-mcp --resource-group symbiote-mcp-rg --min-replicas 0 --max-replicas 1
 ```
 
 ---
 
 ## Support & Documentation
 
-- **Full Spec**: `specs/001-venom-mcp-server/spec.md`
-- **Architecture**: `specs/001-venom-mcp-server/plan.md`
-- **Data Model**: `specs/001-venom-mcp-server/data-model.md`
-- **API Contracts**: `specs/001-venom-mcp-server/contracts/mcp-schema.json`
+- **Full Spec**: `specs/001-symbiote-mcp-server/spec.md`
+- **Architecture**: `specs/001-symbiote-mcp-server/plan.md`
+- **Data Model**: `specs/001-symbiote-mcp-server/data-model.md`
+- **API Contracts**: `specs/001-symbiote-mcp-server/contracts/mcp-schema.json`
 - **Learning Docs**: `docs/learning/` (educational walkthroughs)
 - **Constitution**: `.specify/memory/constitution.md` (design principles)
 

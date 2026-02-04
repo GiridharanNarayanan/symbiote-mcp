@@ -1,12 +1,12 @@
-# Research: Venom MCP Server Technology Choices
+# Research: Symbiote MCP Server Technology Choices
 
-**Feature**: Venom MCP Server
-**Branch**: 001-venom-mcp-server
+**Feature**: Symbiote MCP Server
+**Branch**: 001-symbiote-mcp-server
 **Date**: 2026-01-31
 
 ## Overview
 
-This document consolidates research findings and rationale for all technology choices in the Venom MCP Server implementation. No unknowns or clarifications were needed as all technologies are well-established and align with constitutional requirements.
+This document consolidates research findings and rationale for all technology choices in the Symbiote MCP Server implementation. No unknowns or clarifications were needed as all technologies are well-established and align with constitutional requirements.
 
 ## Technology Decisions
 

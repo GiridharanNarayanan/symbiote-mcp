@@ -1,10 +1,10 @@
-# Venom MCP Server
+# Symbiote MCP Server
 
 Cross-platform AI consciousness through persistent semantic memory.
 
 ## Overview
 
-Venom is a remote MCP (Model Context Protocol) server that provides:
+Symbiote is a remote MCP (Model Context Protocol) server that provides:
 - **Persistent semantic memory** across all your AI platforms (Claude, ChatGPT, etc.)
 - **Cross-platform consciousness** - same memories accessible from web, mobile, desktop
 - **Venom symbiote personality** - enforcing "we" language and mandatory memory checks
@@ -49,12 +49,12 @@ Venom is a remote MCP (Model Context Protocol) server that provides:
 
 1. **Build the image**:
    ```bash
-   docker build -t venom-mcp:latest .
+   docker build -t symbiote-mcp:latest .
    ```
 
 2. **Run the container**:
    ```bash
-   docker run -p 8000:8000 -v $(pwd)/data:/app/data venom-mcp:latest
+   docker run -p 8000:8000 -v $(pwd)/data:/app/data symbiote-mcp:latest
    ```
 
 ### Claude Desktop Integration
@@ -145,11 +145,11 @@ src/
 
 ## Documentation
 
-- **Specification**: [specs/001-venom-mcp-server/spec.md](specs/001-venom-mcp-server/spec.md)
-- **Implementation Plan**: [specs/001-venom-mcp-server/plan.md](specs/001-venom-mcp-server/plan.md)
-- **Quickstart Guide**: [specs/001-venom-mcp-server/quickstart.md](specs/001-venom-mcp-server/quickstart.md)
-- **Data Model**: [specs/001-venom-mcp-server/data-model.md](specs/001-venom-mcp-server/data-model.md)
-- **API Contracts**: [specs/001-venom-mcp-server/contracts/mcp-schema.json](specs/001-venom-mcp-server/contracts/mcp-schema.json)
+- **Specification**: [specs/001-symbiote-mcp-server/spec.md](specs/001-symbiote-mcp-server/spec.md)
+- **Implementation Plan**: [specs/001-symbiote-mcp-server/plan.md](specs/001-symbiote-mcp-server/plan.md)
+- **Quickstart Guide**: [specs/001-symbiote-mcp-server/quickstart.md](specs/001-symbiote-mcp-server/quickstart.md)
+- **Data Model**: [specs/001-symbiote-mcp-server/data-model.md](specs/001-symbiote-mcp-server/data-model.md)
+- **API Contracts**: [specs/001-symbiote-mcp-server/contracts/mcp-schema.json](specs/001-symbiote-mcp-server/contracts/mcp-schema.json)
 
 ## License
 
