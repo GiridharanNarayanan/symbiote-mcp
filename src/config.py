@@ -5,6 +5,7 @@ Validates all settings on startup.
 """
 
 import os
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -61,7 +62,7 @@ class Config:
 
         # Warn if invalid variant specified
         if self.venom_personality not in personality_files:
-            print(f"WARNING: Invalid VENOM_PERSONALITY '{self.venom_personality}', using default")
+            print(f"WARNING: Invalid VENOM_PERSONALITY '{self.venom_personality}', using default", file=sys.stderr)
 
         # Return path relative to project root
         return Path(__file__).parent.parent / filename

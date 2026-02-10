@@ -4,6 +4,7 @@ This module handles all CRUD operations for Venom's memory system,
 using ChromaDB for vector similarity search.
 """
 
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -50,8 +51,8 @@ class MemoryStore:
             metadata={"description": "Venom symbiote semantic memory"},
         )
 
-        print(f"ChromaDB initialized at {self.chromadb_path}")
-        print(f"Collection: {collection_name}, Count: {self.collection.count()}")
+        print(f"ChromaDB initialized at {self.chromadb_path}", file=sys.stderr)
+        print(f"Collection: {collection_name}, Count: {self.collection.count()}", file=sys.stderr)
 
     def store_memory(
         self,
@@ -154,15 +155,13 @@ class MemoryStore:
                 distance = results["distances"][0][idx]
                 metadata = results["metadatas"][0][idx]
 
-                # Convert distance to relevance score (cosine distance to percentage)
-                # ChromaDB returns squared euclidean distance by default for normalized vectors
-                # For normalized vectors, cosine_similarity = 1 - (distance^2 / 2)
-                # We convert to percentage: (1 - distance) * 100
-                relevance_score = max(0, (1 - distance) * 100)
+                # Convert distance to relevance score
+                # ChromaDB cosine distance ranges from 0 (identical) to 2 (opposite)
+                # Convert to percentage: 0 distance = 100%, 2 distance = 0%
+                relevance_score = max(0, (2 - distance) / 2 * 100)
 
-                # Filter out low relevance results
-                if relevance_score < 30:
-                    continue
+                # No filtering - return all results and let the AI judge relevance
+                # (removing threshold because semantic search with generic queries often has low scores)
 
                 # Parse tags from metadata
                 tags = None

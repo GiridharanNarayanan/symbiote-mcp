@@ -4,6 +4,7 @@ Loads the Venom symbiote personality from the configured personality file
 and exposes it as an MCP prompt.
 """
 
+import sys
 from pathlib import Path
 from typing import Dict, Any
 
@@ -36,7 +37,7 @@ class VenomPrompt:
                 )
 
             self._content = self.personality_file_path.read_text(encoding="utf-8")
-            print(f"Loaded personality from: {self.personality_file_path.name}")
+            print(f"Loaded personality from: {self.personality_file_path.name}", file=sys.stderr)
 
         return self._content
 

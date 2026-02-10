@@ -4,7 +4,19 @@ This module wraps the sentence-transformers library to generate
 384-dimension semantic embeddings for text content.
 """
 
+import sys
+import os
+import logging
 from typing import List, Optional
+
+# Suppress ALL library output before importing (MCP uses stdout for JSON-RPC)
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+logging.getLogger("sentence_transformers").setLevel(logging.ERROR)
+logging.getLogger("transformers").setLevel(logging.ERROR)
+logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+
 from sentence_transformers import SentenceTransformer
 
 
@@ -28,9 +40,15 @@ class EmbeddingService:
             Loaded sentence transformer model.
         """
         if self._model is None:
-            print(f"Loading embedding model: {self.model_name}")
-            self._model = SentenceTransformer(self.model_name)
-            print(f"Model loaded successfully. Embedding dimensions: {self.get_embedding_dimensions()}")
+            print(f"Loading embedding model: {self.model_name}", file=sys.stderr)
+            # Redirect stdout temporarily to suppress progress bars
+            old_stdout = sys.stdout
+            sys.stdout = sys.stderr
+            try:
+                self._model = SentenceTransformer(self.model_name, device="cpu")
+            finally:
+                sys.stdout = old_stdout
+            print(f"Model loaded. Dimensions: {self.get_embedding_dimensions()}", file=sys.stderr)
         return self._model
 
     def get_embedding_dimensions(self) -> int:
@@ -58,7 +76,7 @@ class EmbeddingService:
             raise ValueError("Cannot generate embedding for empty text")
 
         model = self._load_model()
-        embedding = model.encode(text, convert_to_numpy=True)
+        embedding = model.encode(text, convert_to_numpy=True, show_progress_bar=False)
 
         # Convert numpy array to Python list
         return embedding.tolist()
@@ -82,7 +100,7 @@ class EmbeddingService:
             raise ValueError("Cannot generate embedding for empty text")
 
         model = self._load_model()
-        embeddings = model.encode(texts, convert_to_numpy=True)
+        embeddings = model.encode(texts, convert_to_numpy=True, show_progress_bar=False)
 
         # Convert numpy arrays to Python lists
         return [emb.tolist() for emb in embeddings]

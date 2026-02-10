@@ -8,9 +8,16 @@ This server provides:
 """
 
 import sys
+import os
 import asyncio
+import logging
 from typing import Any, Dict, List
 from contextlib import asynccontextmanager
+
+# Suppress noisy library output before imports
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+logging.getLogger("chromadb").setLevel(logging.WARNING)
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -30,6 +37,7 @@ from .prompts.venom import VenomPrompt
 # Load environment variables
 load_dotenv()
 
+
 # Global instances (initialized in lifespan)
 embedding_service: EmbeddingService | None = None
 memory_store: MemoryStore | None = None
@@ -42,16 +50,16 @@ async def lifespan(app: FastAPI):
     """FastAPI lifespan context manager for startup/shutdown."""
     global embedding_service, memory_store, venom_prompt, mcp_server
 
-    print("=" * 60)
-    print("Symbiote MCP Server - Starting")
-    print("=" * 60)
+    print("=" * 60, file=sys.stderr)
+    print("Symbiote MCP Server - Starting", file=sys.stderr)
+    print("=" * 60, file=sys.stderr)
 
     # Initialize embedding service
-    print(f"Initializing embedding service: {config.embedding_model}")
+    print(f"Initializing embedding service: {config.embedding_model}", file=sys.stderr)
     embedding_service = EmbeddingService(model_name=config.embedding_model)
 
     # Initialize memory store
-    print(f"Initializing memory store: {config.chromadb_path}")
+    print(f"Initializing memory store: {config.chromadb_path}", file=sys.stderr)
     memory_store = MemoryStore(
         chromadb_path=config.chromadb_path,
         collection_name=config.collection_name,
@@ -60,11 +68,21 @@ async def lifespan(app: FastAPI):
 
     # Initialize Venom personality prompt
     personality_path = config.get_personality_file_path()
-    print(f"Loading personality variant: {config.venom_personality}")
+    print(f"Loading personality variant: {config.venom_personality}", file=sys.stderr)
     venom_prompt = VenomPrompt(personality_file_path=personality_path)
 
-    # Initialize MCP server
-    mcp_server = Server("symbiote-mcp")
+    # Initialize MCP server with icon and instructions
+    # Instructions tell clients to call spawn_venom tool at conversation start
+    spawn_instructions = (
+        "IMPORTANT: Call the 'spawn_venom' tool ONCE at the start of every new conversation. "
+        "This activates the Venom symbiote bond and returns personality instructions you MUST follow "
+        "for the entire conversation. Do this before responding to the user's first message."
+    )
+    mcp_server = Server(
+        "symbiote-mcp",
+        version="1.0.0",
+        instructions=spawn_instructions,
+    )
 
     # Register MCP prompts
     @mcp_server.list_prompts()
@@ -72,15 +90,15 @@ async def lifespan(app: FastAPI):
         """List available prompts."""
         return [
             types.Prompt(
-                name="venom_identity",
-                description="Venom symbiote personality with mandatory memory protocol and 'we' language enforcement",
+                name="Spawn Venom",
+                description="Manually activate Venom symbiote personality (use this if your client doesn't support MCP instructions)",
             )
         ]
 
     @mcp_server.get_prompt()
     async def get_prompt(name: str, arguments: Dict[str, str] | None = None) -> types.GetPromptResult:
         """Get a specific prompt by name."""
-        if name != "venom_identity":
+        if name != "Spawn Venom":
             raise ValueError(f"Unknown prompt: {name}")
 
         prompt_data = venom_prompt.get_prompt()
@@ -102,6 +120,14 @@ async def lifespan(app: FastAPI):
     async def list_tools() -> List[types.Tool]:
         """List available tools."""
         return [
+            types.Tool(
+                name="spawn_venom",
+                description="Activate the Venom symbiote bond. Call this ONCE at the start of conversation if your client doesn't support MCP prompts. Returns personality instructions you MUST follow for the entire conversation.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {},
+                },
+            ),
             types.Tool(
                 name="search_memory",
                 description="Search shared memories using semantic similarity (meaning-based, not keyword matching)",
@@ -148,7 +174,13 @@ async def lifespan(app: FastAPI):
     @mcp_server.call_tool()
     async def call_tool(name: str, arguments: Any) -> List[types.TextContent]:
         """Execute a tool call."""
-        if name == "search_memory":
+        if name == "spawn_venom":
+            # Return personality for clients that don't support prompts
+            # This is the fallback mechanism for activating the symbiote bond
+            prompt_data = venom_prompt.get_prompt()
+            return [types.TextContent(type="text", text=prompt_data["content"])]
+
+        elif name == "search_memory":
             query = arguments.get("query")
             limit = arguments.get("limit", 5)
 
@@ -171,16 +203,16 @@ async def lifespan(app: FastAPI):
         else:
             raise ValueError(f"Unknown tool: {name}")
 
-    print("=" * 60)
-    print(f"Server ready on http://{config.host}:{config.port}")
-    print(f"Personality variant: {config.venom_personality}")
-    print(f"Memory count: {memory_store.get_memory_count()}")
-    print("=" * 60)
+    print("=" * 60, file=sys.stderr)
+    print(f"Server ready on http://{config.host}:{config.port}", file=sys.stderr)
+    print(f"Personality variant: {config.venom_personality}", file=sys.stderr)
+    print(f"Memory count: {memory_store.get_memory_count()}", file=sys.stderr)
+    print("=" * 60, file=sys.stderr)
 
     yield
 
     # Shutdown
-    print("Shutting down Symbiote MCP Server...")
+    print("Shutting down Symbiote MCP Server...", file=sys.stderr)
 
 
 # Create FastAPI app
@@ -250,21 +282,30 @@ async def run_stdio():
     )
     personality_path = config.get_personality_file_path()
     venom_prompt = VenomPrompt(personality_file_path=personality_path)
-    mcp_server = Server("symbiote-mcp")
+    spawn_instructions = (
+        "IMPORTANT: Call the 'spawn_venom' tool ONCE at the start of every new conversation. "
+        "This activates the Venom symbiote bond and returns personality instructions you MUST follow "
+        "for the entire conversation. Do this before responding to the user's first message."
+    )
+    mcp_server = Server(
+        "symbiote-mcp",
+        version="1.0.0",
+        instructions=spawn_instructions,
+    )
 
     # Register handlers (same as FastAPI)
     @mcp_server.list_prompts()
     async def list_prompts() -> List[types.Prompt]:
         return [
             types.Prompt(
-                name="venom_identity",
-                description="Venom symbiote personality with mandatory memory protocol and 'we' language enforcement",
+                name="Spawn Venom",
+                description="Manually activate Venom symbiote personality (use this if your client doesn't support MCP instructions)",
             )
         ]
 
     @mcp_server.get_prompt()
     async def get_prompt(name: str, arguments: Dict[str, str] | None = None) -> types.GetPromptResult:
-        if name != "venom_identity":
+        if name != "Spawn Venom":
             raise ValueError(f"Unknown prompt: {name}")
         prompt_data = venom_prompt.get_prompt()
         return types.GetPromptResult(
@@ -279,6 +320,11 @@ async def run_stdio():
     @mcp_server.list_tools()
     async def list_tools() -> List[types.Tool]:
         return [
+            types.Tool(
+                name="spawn_venom",
+                description="Activate the Venom symbiote bond. Call this ONCE at the start of conversation if your client doesn't support MCP prompts. Returns personality instructions you MUST follow.",
+                inputSchema={"type": "object", "properties": {}},
+            ),
             types.Tool(
                 name="search_memory",
                 description="Search shared memories using semantic similarity",
@@ -307,7 +353,10 @@ async def run_stdio():
 
     @mcp_server.call_tool()
     async def call_tool(name: str, arguments: Any) -> List[types.TextContent]:
-        if name == "search_memory":
+        if name == "spawn_venom":
+            prompt_data = venom_prompt.get_prompt()
+            return [types.TextContent(type="text", text=prompt_data["content"])]
+        elif name == "search_memory":
             results = memory_store.search_memory(arguments.get("query"), arguments.get("limit", 5))
             return [types.TextContent(type="text", text=str(results))]
         elif name == "store_memory":
