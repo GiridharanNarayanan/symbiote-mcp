@@ -55,3 +55,4 @@ jobs:
           registryUrl: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
           registryUsername: ${{ secrets.ACR_USERNAME }}
           registryPassword: ${{ secrets.ACR_PASSWORD }}
+          targetPort: 8000
