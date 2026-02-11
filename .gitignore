@@ -1,2 +1,60 @@
 # SpecKit - Agent folder (may contain credentials and tokens)
 .claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data and logs
+*.log
+*.log.*
+data/
+*.db
+*.sqlite
+
+# ChromaDB specific
+chroma.sqlite3
+
+# Learning documentation (local only)
+docs/

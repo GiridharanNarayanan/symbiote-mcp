@@ -4,7 +4,7 @@ Auto-generated from all feature plans. Last updated: 2026-01-31
 
 ## Active Technologies
 
-- Python 3.11+ + mcp (official Python SDK), FastAPI, sentence-transformers, chromadb, uvicorn (001-venom-mcp-server)
+- Python 3.11+ + mcp (official Python SDK), FastAPI, sentence-transformers, chromadb, uvicorn (001-symbiote-mcp-server)
 
 ## Project Structure
 
@@ -23,7 +23,7 @@ Python 3.11+: Follow standard conventions
 
 ## Recent Changes
 
-- 001-venom-mcp-server: Added Python 3.11+ + mcp (official Python SDK), FastAPI, sentence-transformers, chromadb, uvicorn
+- 001-symbiote-mcp-server: Added Python 3.11+ + mcp (official Python SDK), FastAPI, sentence-transformers, chromadb, uvicorn
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

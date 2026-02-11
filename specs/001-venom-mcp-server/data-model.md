@@ -1,12 +1,12 @@
-# Data Model: Venom MCP Server
+# Data Model: Symbiote MCP Server
 
-**Feature**: Venom MCP Server
-**Branch**: 001-venom-mcp-server
+**Feature**: Symbiote MCP Server
+**Branch**: 001-symbiote-mcp-server
 **Date**: 2026-01-31
 
 ## Overview
 
-This document defines all data entities, their schemas, relationships, and validation rules for the Venom MCP Server. The system has a simple data model focused on Memory storage and retrieval with semantic embeddings.
+This document defines all data entities, their schemas, relationships, and validation rules for the Symbiote MCP Server. The system has a simple data model focused on Memory storage and retrieval with semantic embeddings.
 
 ---
 

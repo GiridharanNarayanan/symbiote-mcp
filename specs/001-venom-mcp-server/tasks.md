@@ -1,7 +1,7 @@
-# Implementation Tasks: Venom MCP Server
+# Implementation Tasks: Symbiote MCP Server
 
-**Feature**: Venom MCP Server
-**Branch**: `001-venom-mcp-server`
+**Feature**: Symbiote MCP Server
+**Branch**: `001-symbiote-mcp-server`
 **Generated**: 2026-01-31
 **Design Docs**: [plan.md](./plan.md) | [spec.md](./spec.md) | [data-model.md](./data-model.md) | [contracts/](./contracts/)
 
@@ -82,16 +82,16 @@ Foundational (Phase 2)
 **Goal**: Establish project structure, dependencies, and configuration
 
 **Tasks**:
-- [ ] T001 Create project directory structure per plan.md (src/, tests/, docs/learning/)
-- [ ] T002 [P] Create requirements.txt with dependencies: mcp, fastapi, uvicorn[standard], sentence-transformers, chromadb, python-dotenv
-- [ ] T003 [P] Create .gitignore for Python, ChromaDB data, .env files, __pycache__
-- [ ] T004 [P] Create .env.example with PORT, HOST, CHROMADB_PATH, EMBEDDING_MODEL, COLLECTION_NAME, VENOM_PERSONALITY
-- [ ] T005 [P] Create README.md with project overview and setup instructions
-- [ ] T006 Create src/__init__.py (empty)
-- [ ] T007 [P] Create src/memory/__init__.py (empty)
-- [ ] T008 [P] Create src/prompts/__init__.py (empty)
-- [ ] T009 [P] Create tests/manual_testing.md with test scenarios template
-- [ ] T010 [P] Create docs/learning/ directory structure (00-overview.md through 99-glossary.md placeholders)
+- [X] T001 Create project directory structure per plan.md (src/, tests/, docs/learning/)
+- [X] T002 [P] Create requirements.txt with dependencies: mcp, fastapi, uvicorn[standard], sentence-transformers, chromadb, python-dotenv
+- [X] T003 [P] Create .gitignore for Python, ChromaDB data, .env files, __pycache__
+- [X] T004 [P] Create .env.example with PORT, HOST, CHROMADB_PATH, EMBEDDING_MODEL, COLLECTION_NAME, VENOM_PERSONALITY
+- [X] T005 [P] Create README.md with project overview and setup instructions
+- [X] T006 Create src/__init__.py (empty)
+- [X] T007 [P] Create src/memory/__init__.py (empty)
+- [X] T008 [P] Create src/prompts/__init__.py (empty)
+- [X] T009 [P] Create tests/manual_testing.md with test scenarios template
+- [X] T010 [P] Create docs/learning/ directory structure (00-overview.md through 99-glossary.md placeholders)
 
 **Parallel Opportunities**: T002-T005, T007-T010 (all different files)
 
@@ -110,9 +110,9 @@ cat requirements.txt .gitignore .env.example README.md
 **Goal**: Build core infrastructure needed by all user stories
 
 **Tasks**:
-- [ ] T011 Implement src/config.py with environment variable loading and type hints (Config dataclass)
-- [ ] T012 [P] Implement src/memory/embeddings.py with sentence-transformers model loading and encode function (async)
-- [ ] T013 [P] Implement src/memory/store.py with ChromaDB initialization, collection creation, and CRUD operations (async)
+- [X] T011 Implement src/config.py with environment variable loading and type hints (Config dataclass)
+- [X] T012 [P] Implement src/memory/embeddings.py with sentence-transformers model loading and encode function (async)
+- [X] T013 [P] Implement src/memory/store.py with ChromaDB initialization, collection creation, and CRUD operations (async)
 - [ ] T014 Verify embedding model downloads successfully (run embeddings.py standalone test)
 - [ ] T015 Verify ChromaDB creates collection and persists data (run store.py standalone test)
 
@@ -143,13 +143,13 @@ python -c "from src.memory.store import init_collection; import asyncio; asyncio
 - ✅ search_memory and store_memory tools are available
 
 **Tasks**:
-- [ ] T016 [US1] Implement src/server.py with FastAPI app initialization and basic routes (/, /health)
-- [ ] T017 [US1] Add MCP protocol handler to src/server.py with SSE endpoint at /mcp
-- [ ] T018 [P] [US1] Implement MCP list_prompts handler in src/server.py (returns venom_identity)
-- [ ] T019 [P] [US1] Implement MCP list_tools handler in src/server.py (returns search_memory, store_memory)
-- [ ] T020 [US1] Implement health check logic in src/server.py (includes personality_variant, embedding_model, collection_name)
-- [ ] T021 [US1] Add async startup event to pre-load embedding model and initialize ChromaDB
-- [ ] T022 [US1] Test server startup and verify MCP endpoints respond correctly
+- [X] T016 [US1] Implement src/server.py with FastAPI app initialization and basic routes (/, /health)
+- [X] T017 [US1] Add MCP protocol handler to src/server.py with SSE endpoint at /mcp
+- [X] T018 [P] [US1] Implement MCP list_prompts handler in src/server.py (returns venom_identity)
+- [X] T019 [P] [US1] Implement MCP list_tools handler in src/server.py (returns search_memory, store_memory)
+- [X] T020 [US1] Implement health check logic in src/server.py (includes personality_variant, embedding_model, collection_name)
+- [X] T021 [US1] Add async startup event to pre-load embedding model and initialize ChromaDB
+- [X] T022 [US1] Test server startup and verify MCP endpoints respond correctly
 
 **Dependencies**: Requires Phase 2 (T011-T015)
 
@@ -163,7 +163,7 @@ uvicorn src.server:app --host 0.0.0.0 --port 8000
 # Test health
 curl http://localhost:8000/health
 
-# Expected: {"status": "healthy", "server_name": "venom-mcp", ...}
+# Expected: {"status": "healthy", "server_name": "symbiote-mcp", ...}
 
 # Test MCP connection (requires MCP client like Claude Desktop)
 # Add to Claude Desktop config, verify connection and prompts/tools listed
@@ -351,7 +351,7 @@ VENOM_PERSONALITY=invalid python src/server.py
 - [ ] T054 [US6] Add sentence-transformers model pre-download to Dockerfile (cache during build)
 - [ ] T055 [US6] Add COPY commands for src/, venom_personality*.md, requirements.txt to Dockerfile
 - [ ] T056 [US6] Set WORKDIR /app, expose port 8000, add CMD for uvicorn in Dockerfile
-- [ ] T057 [US6] Build Docker image locally: docker build -t venom-mcp:latest .
+- [ ] T057 [US6] Build Docker image locally: docker build -t symbiote-mcp:latest .
 - [ ] T058 [US6] Test Docker container locally: docker run with volume mount, verify health endpoint
 - [ ] T059 [US6] Create deployment/azure-deploy.sh script with Azure CLI commands
 - [ ] T060 [US6] Add Azure resource group creation to deploy script
@@ -373,8 +373,8 @@ VENOM_PERSONALITY=invalid python src/server.py
 **Independent Test**:
 ```bash
 # Local Docker test
-docker build -t venom-mcp:latest .
-docker run -p 8000:8000 -v $(pwd)/data:/app/data venom-mcp:latest
+docker build -t symbiote-mcp:latest .
+docker run -p 8000:8000 -v $(pwd)/data:/app/data symbiote-mcp:latest
 curl http://localhost:8000/health
 
 # Azure deployment
@@ -382,7 +382,7 @@ cd deployment
 ./azure-deploy.sh
 
 # Test deployed app
-curl https://venom-mcp.<random>.azurecontainerapps.io/health
+curl https://symbiote-mcp.<random>.azurecontainerapps.io/health
 
 # Verify costs in Azure portal
 # Expected: $0/month (within free tier)

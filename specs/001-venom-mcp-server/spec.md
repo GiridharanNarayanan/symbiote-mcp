@@ -1,6 +1,6 @@
-# Feature Specification: Venom MCP Server
+# Feature Specification: Symbiote MCP Server
 
-**Feature Branch**: `001-venom-mcp-server`
+**Feature Branch**: `001-symbiote-mcp-server`
 **Created**: 2026-01-25
 **Status**: Draft
 **Input**: User description: "Build Venom, a cross-platform AI assistant with persistent memory using Model Context Protocol (MCP)"
@@ -17,7 +17,7 @@ One continuous AI consciousness accessible from any MCP-compatible platform (Cla
 
 **Acceptance Scenarios**:
 
-1. **Given** a deployed Venom MCP server, **When** user adds the server URL to Claude.ai settings, **Then** connection is verified, venom_identity prompt is available, and both memory tools are accessible
+1. **Given** a deployed Symbiote MCP server, **When** user adds the server URL to Claude.ai settings, **Then** connection is verified, venom_identity prompt is available, and both memory tools are accessible
 2. **Given** Venom is connected to Claude mobile, **When** user shares a preference "I prefer TypeScript over JavaScript", **Then** Venom calls store_memory() and confirms storage
 3. **Given** a memory was stored on Claude mobile, **When** user asks ChatGPT desktop 2 hours later "Help me write a script", **Then** Venom calls search_memory(), retrieves the TypeScript preference, and uses it without re-explanation
 4. **Given** multiple platforms connected, **When** user switches between web/mobile/desktop, **Then** same memories are available everywhere with zero per-platform configuration
@@ -195,8 +195,8 @@ Deploy to Azure Container Apps with scale-to-zero capability, staying within fre
 ### Measurable Outcomes
 
 #### Functionality
-- **SC-001**: Venom MCP server successfully connects to Claude (web, mobile, desktop) with zero configuration beyond initial URL setup
-- **SC-002**: Venom MCP server successfully connects to ChatGPT (web, mobile) via developer mode
+- **SC-001**: Symbiote MCP server successfully connects to Claude (web, mobile, desktop) with zero configuration beyond initial URL setup
+- **SC-002**: Symbiote MCP server successfully connects to ChatGPT (web, mobile) via developer mode
 - **SC-003**: Memory stored on one platform is successfully retrieved on different platform within 2 seconds
 - **SC-004**: 100% of user interactions trigger automatic search_memory() call before response generation
 - **SC-005**: venom_identity prompt successfully loads and enforces personality on all platforms

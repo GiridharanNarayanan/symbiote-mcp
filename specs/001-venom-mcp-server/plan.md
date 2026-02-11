@@ -1,7 +1,7 @@
-# Implementation Plan: Venom MCP Server
+# Implementation Plan: Symbiote MCP Server
 
-**Branch**: `001-venom-mcp-server` | **Date**: 2026-01-31 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-venom-mcp-server/spec.md`
+**Branch**: `001-symbiote-mcp-server` | **Date**: 2026-01-31 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/001-symbiote-mcp-server/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
@@ -176,7 +176,7 @@ VENOM_PERSONALITY=variant2 python src/server.py
 GET /health
 {
   "status": "healthy",
-  "server_name": "venom-mcp",
+  "server_name": "symbiote-mcp",
   "personality_variant": "variant2",
   ...
 }

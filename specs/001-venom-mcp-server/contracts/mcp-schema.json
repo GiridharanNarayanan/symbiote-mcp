@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Venom MCP Server API Contract",
-  "description": "MCP protocol tools and prompts exposed by the Venom MCP Server",
+  "title": "Symbiote MCP Server API Contract",
+  "description": "MCP protocol tools and prompts exposed by the Symbiote MCP Server",
   "version": "1.0.0",
 
   "prompts": {
@@ -312,7 +312,7 @@
   },
 
   "metadata": {
-    "server_name": "venom-mcp",
+    "server_name": "symbiote-mcp",
     "version": "1.0.0",
     "mcp_protocol_version": "2024-11-05",
     "embedding_model": "all-MiniLM-L6-v2",
