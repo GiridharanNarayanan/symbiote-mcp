@@ -370,7 +370,8 @@ async def run_stdio():
         await mcp_server.run(read_stream, write_stream, mcp_server.create_initialization_options())
 
 
-if __name__ == "__main__":
+def main():
+    """Entry point for the symbiote-mcp command."""
     # Check if running in stdio mode (for Claude Desktop)
     if len(sys.argv) > 1 and sys.argv[1] == "--stdio":
         asyncio.run(run_stdio())
@@ -378,3 +379,7 @@ if __name__ == "__main__":
         # Run FastAPI server with uvicorn
         import uvicorn
         uvicorn.run(app, host=config.host, port=config.port)
+
+
+if __name__ == "__main__":
+    main()

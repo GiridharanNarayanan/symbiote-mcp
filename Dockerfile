@@ -30,10 +30,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy pre-downloaded model from builder stage (huggingface hub cache)
 COPY --from=model-builder /root/.cache/huggingface /root/.cache/huggingface
 
-# Copy application code
+# Copy application code (personality files are now inside src/personalities/)
 COPY src/ /app/src/
-COPY venom_personality.md /app/
-COPY venom_personality_v2.md /app/
 
 # Create data directory for ChromaDB
 RUN mkdir -p /app/data

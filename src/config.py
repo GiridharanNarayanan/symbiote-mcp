@@ -64,8 +64,8 @@ class Config:
         if self.venom_personality not in personality_files:
             print(f"WARNING: Invalid VENOM_PERSONALITY '{self.venom_personality}', using default", file=sys.stderr)
 
-        # Return path relative to project root
-        return Path(__file__).parent.parent / filename
+        # Return path relative to package (src/personalities/)
+        return Path(__file__).parent / "personalities" / filename
 
     def __repr__(self) -> str:
         """String representation for debugging."""
