@@ -56,3 +56,8 @@ jobs:
           registryUsername: ${{ secrets.ACR_USERNAME }}
           registryPassword: ${{ secrets.ACR_PASSWORD }}
           targetPort: 8000
+          environmentVariables: >-
+            VENOM_PERSONALITY=${{ vars.VENOM_PERSONALITY || 'default' }}
+            COLLECTION_NAME=${{ vars.COLLECTION_NAME || 'venom_memories' }}
+            EMBEDDING_MODEL=${{ vars.EMBEDDING_MODEL || 'all-MiniLM-L6-v2' }}
+            CHROMADB_PATH=${{ vars.CHROMADB_PATH || '/app/data' }}
