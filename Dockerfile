@@ -1,6 +1,6 @@
 # Multi-stage build for Symbiote MCP Server
 # Stage 1: Download embedding model
-FROM python:3.11-slim as model-builder
+FROM python:3.11-slim AS model-builder
 
 WORKDIR /models
 
@@ -27,8 +27,8 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy pre-downloaded model from builder stage
-COPY --from=model-builder /root/.cache/torch/sentence_transformers /root/.cache/torch/sentence_transformers
+# Copy pre-downloaded model from builder stage (huggingface hub cache)
+COPY --from=model-builder /root/.cache/huggingface /root/.cache/huggingface
 
 # Copy application code
 COPY src/ /app/src/
