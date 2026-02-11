@@ -1,7 +1,7 @@
 """Symbiote MCP Server - Main FastAPI application with MCP protocol support.
 
 This server provides:
-- MCP protocol via SSE (/mcp endpoint)
+- MCP protocol via SSE (/sse endpoint + /messages POST)
 - Health check endpoints (/, /health)
 - venom_identity prompt (personality from file)
 - search_memory and store_memory tools (semantic memory)
@@ -20,7 +20,7 @@ logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
 logging.getLogger("chromadb").setLevel(logging.WARNING)
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
 from mcp import types
@@ -248,25 +248,25 @@ async def health() -> JSONResponse:
     })
 
 
-@app.get("/mcp")
-async def handle_sse(request: Request) -> StreamingResponse:
-    """Handle MCP protocol over Server-Sent Events."""
-    async def event_generator():
-        async with SseServerTransport("/mcp") as (read_stream, write_stream):
-            await mcp_server.run(
-                read_stream,
-                write_stream,
-                mcp_server.create_initialization_options(),
-            )
+# SSE transport for MCP protocol (initialized at module level, used in routes)
+sse_transport = SseServerTransport("/messages/")
 
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-        },
-    )
+
+async def handle_sse(request: Request):
+    """Handle SSE connection for MCP protocol."""
+    async with sse_transport.connect_sse(
+        request.scope, request.receive, request._send
+    ) as streams:
+        await mcp_server.run(
+            streams[0],
+            streams[1],
+            mcp_server.create_initialization_options(),
+        )
+
+
+# Mount SSE routes
+app.add_route("/sse", handle_sse)
+app.mount("/messages", sse_transport.handle_post_message)
 
 
 async def run_stdio():
