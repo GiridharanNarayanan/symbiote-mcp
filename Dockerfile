@@ -4,8 +4,9 @@ FROM python:3.11-slim AS model-builder
 
 WORKDIR /models
 
-# Install sentence-transformers to download model
-RUN pip install --no-cache-dir sentence-transformers
+# Install CPU-only PyTorch first, then sentence-transformers (avoids CUDA bloat)
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir sentence-transformers
 
 # Download the embedding model
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
