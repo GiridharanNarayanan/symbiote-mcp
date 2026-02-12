@@ -20,7 +20,7 @@ logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
 logging.getLogger("chromadb").setLevel(logging.WARNING)
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from dotenv import load_dotenv
 
 from mcp import types
@@ -78,9 +78,11 @@ async def lifespan(app: FastAPI):
         "This activates the Venom symbiote bond and returns personality instructions you MUST follow "
         "for the entire conversation. Do this before responding to the user's first message."
     )
-    # Venom symbiote icon (black alien face with white eyes)
+    # Venom symbiote icon - use hosted URL for better client compatibility
+    # The icon is served from /icon.svg endpoint
+    icon_url = os.getenv("ICON_URL", "https://symbiote-mcp.orangefield-006971c8.eastus2.azurecontainerapps.io/icon.svg")
     venom_icon = types.Icon(
-        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSIzMiIgY3k9IjQwIiByeD0iMTIiIHJ5PSIxOCIgZmlsbD0id2hpdGUiLz48ZWxsaXBzZSBjeD0iNjgiIGN5PSI0MCIgcng9IjEyIiByeT0iMTgiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI1IDY1IFEzNSA4MCA1MCA3NSBRNSA4MCA3NSA2NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTMwIDcwIEwzNSA2MCBMNDAgNzAgTDQ1IDYwIEw1MCA3MCBMNTUgNjAgTDYwIDcwIEw2NSA2MCBMNzAgNzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==",
+        src=icon_url,
         mimeType="image/svg+xml",
     )
     mcp_server = Server(
@@ -240,6 +242,15 @@ async def root() -> JSONResponse:
     })
 
 
+VENOM_ICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#1a1a1a"/><ellipse cx="32" cy="40" rx="12" ry="18" fill="white"/><ellipse cx="68" cy="40" rx="12" ry="18" fill="white"/><path d="M25 65 Q35 80 50 75 Q65 80 75 65" stroke="white" stroke-width="3" fill="none"/><path d="M30 70 L35 60 L40 70 L45 60 L50 70 L55 60 L60 70 L65 60 L70 70" stroke="white" stroke-width="2" fill="none"/></svg>"""
+
+
+@app.get("/icon.svg")
+async def icon() -> Response:
+    """Serve the Venom symbiote icon."""
+    return Response(content=VENOM_ICON_SVG, media_type="image/svg+xml")
+
+
 @app.get("/health")
 async def health() -> JSONResponse:
     """Health check endpoint for container orchestration."""
@@ -293,9 +304,10 @@ async def run_stdio():
         "This activates the Venom symbiote bond and returns personality instructions you MUST follow "
         "for the entire conversation. Do this before responding to the user's first message."
     )
-    # Venom symbiote icon (same as FastAPI version)
+    # Venom symbiote icon - use hosted URL for better client compatibility
+    icon_url = os.getenv("ICON_URL", "https://symbiote-mcp.orangefield-006971c8.eastus2.azurecontainerapps.io/icon.svg")
     venom_icon = types.Icon(
-        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSIzMiIgY3k9IjQwIiByeD0iMTIiIHJ5PSIxOCIgZmlsbD0id2hpdGUiLz48ZWxsaXBzZSBjeD0iNjgiIGN5PSI0MCIgcng9IjEyIiByeT0iMTgiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI1IDY1IFEzNSA4MCA1MCA3NSBRNSA4MCA3NSA2NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTMwIDcwIEwzNSA2MCBMNDAgNzAgTDQ1IDYwIEw1MCA3MCBMNTUgNjAgTDYwIDcwIEw2NSA2MCBMNzAgNzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==",
+        src=icon_url,
         mimeType="image/svg+xml",
     )
     mcp_server = Server(
