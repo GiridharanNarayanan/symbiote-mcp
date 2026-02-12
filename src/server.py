@@ -78,10 +78,16 @@ async def lifespan(app: FastAPI):
         "This activates the Venom symbiote bond and returns personality instructions you MUST follow "
         "for the entire conversation. Do this before responding to the user's first message."
     )
+    # Venom symbiote icon (black alien face with white eyes)
+    venom_icon = types.Icon(
+        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSIzMiIgY3k9IjQwIiByeD0iMTIiIHJ5PSIxOCIgZmlsbD0id2hpdGUiLz48ZWxsaXBzZSBjeD0iNjgiIGN5PSI0MCIgcng9IjEyIiByeT0iMTgiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI1IDY1IFEzNSA4MCA1MCA3NSBRNSA4MCA3NSA2NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTMwIDcwIEwzNSA2MCBMNDAgNzAgTDQ1IDYwIEw1MCA3MCBMNTUgNjAgTDYwIDcwIEw2NSA2MCBMNzAgNzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==",
+        mimeType="image/svg+xml",
+    )
     mcp_server = Server(
         "symbiote-mcp",
         version="1.0.0",
         instructions=spawn_instructions,
+        icons=[venom_icon],
     )
 
     # Register MCP prompts
@@ -91,7 +97,7 @@ async def lifespan(app: FastAPI):
         return [
             types.Prompt(
                 name="Spawn Venom",
-                description="Manually activate Venom symbiote personality (use this if your client doesn't support MCP instructions)",
+                description="Spawn Venom symbiote",
             )
         ]
 
@@ -287,10 +293,16 @@ async def run_stdio():
         "This activates the Venom symbiote bond and returns personality instructions you MUST follow "
         "for the entire conversation. Do this before responding to the user's first message."
     )
+    # Venom symbiote icon (same as FastAPI version)
+    venom_icon = types.Icon(
+        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iIzFhMWExYSIvPjxlbGxpcHNlIGN4PSIzMiIgY3k9IjQwIiByeD0iMTIiIHJ5PSIxOCIgZmlsbD0id2hpdGUiLz48ZWxsaXBzZSBjeD0iNjgiIGN5PSI0MCIgcng9IjEyIiByeT0iMTgiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI1IDY1IFEzNSA4MCA1MCA3NSBRNSA4MCA3NSA2NSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTMwIDcwIEwzNSA2MCBMNDAgNzAgTDQ1IDYwIEw1MCA3MCBMNTUgNjAgTDYwIDcwIEw2NSA2MCBMNzAgNzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==",
+        mimeType="image/svg+xml",
+    )
     mcp_server = Server(
         "symbiote-mcp",
         version="1.0.0",
         instructions=spawn_instructions,
+        icons=[venom_icon],
     )
 
     # Register handlers (same as FastAPI)
@@ -299,7 +311,7 @@ async def run_stdio():
         return [
             types.Prompt(
                 name="Spawn Venom",
-                description="Manually activate Venom symbiote personality (use this if your client doesn't support MCP instructions)",
+                description="Spawn Venom symbiote",
             )
         ]
 
