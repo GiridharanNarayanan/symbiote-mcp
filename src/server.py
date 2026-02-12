@@ -257,6 +257,15 @@ async def favicon() -> Response:
     return Response(content=VENOM_ICON_SVG, media_type="image/svg+xml")
 
 
+@app.get("/googlec197ed01aa49b5a6.html")
+async def google_site_verification() -> Response:
+    """Google Search Console site verification file."""
+    return Response(
+        content="google-site-verification: googlec197ed01aa49b5a6.html",
+        media_type="text/html",
+    )
+
+
 @app.get("/health")
 async def health() -> JSONResponse:
     """Health check endpoint for container orchestration."""
