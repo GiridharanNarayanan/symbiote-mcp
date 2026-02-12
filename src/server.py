@@ -251,6 +251,12 @@ async def icon() -> Response:
     return Response(content=VENOM_ICON_SVG, media_type="image/svg+xml")
 
 
+@app.get("/favicon.ico")
+async def favicon() -> Response:
+    """Serve favicon as SVG (browsers accept this)."""
+    return Response(content=VENOM_ICON_SVG, media_type="image/svg+xml")
+
+
 @app.get("/health")
 async def health() -> JSONResponse:
     """Health check endpoint for container orchestration."""
