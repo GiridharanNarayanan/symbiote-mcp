@@ -22,11 +22,13 @@ jobs:
       - name: Checkout submodules
         # The personalities submodule is expected to be private.
         # `GITHUB_TOKEN` cannot read private repos other than the current one, so we use a PAT.
-        if: ${{ secrets.SUBMODULE_TOKEN != '' }}
         env:
           SUBMODULE_TOKEN: ${{ secrets.SUBMODULE_TOKEN }}
         run: |
-          git config --global url."https://x-access-token:${SUBMODULE_TOKEN}@github.com/".insteadOf "https://github.com/"
+          if [ -n "$SUBMODULE_TOKEN" ]; then
+            git config --global url."https://x-access-token:${SUBMODULE_TOKEN}@github.com/".insteadOf "https://github.com/"
+          fi
+
           git submodule update --init --recursive
 
       - name: Verify personalities present
