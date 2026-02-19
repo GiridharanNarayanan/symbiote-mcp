@@ -29,6 +29,10 @@ class Config:
         # Personality variant
         self.venom_personality: str = os.getenv("VENOM_PERSONALITY", "default")
 
+        # Optional directory containing personality markdown files.
+        # Intended for private submodules or mounted secrets.
+        self.personality_dir: str | None = os.getenv("PERSONALITY_DIR")
+
         # Validate configuration
         self._validate()
 
@@ -64,8 +68,30 @@ class Config:
         if self.venom_personality not in personality_files:
             print(f"WARNING: Invalid VENOM_PERSONALITY '{self.venom_personality}', using default", file=sys.stderr)
 
-        # Return path relative to project root
-        return Path(__file__).parent.parent / filename
+        project_root = Path(__file__).parent.parent
+
+        candidate_dirs: list[Path] = []
+
+        if self.personality_dir:
+            configured = Path(self.personality_dir).expanduser()
+            # If relative, interpret it relative to the project root.
+            if not configured.is_absolute():
+                configured = (project_root / configured).resolve()
+            candidate_dirs.append(configured)
+
+        # Conventional location for private submodule assets
+        candidate_dirs.append(project_root / "personalities")
+
+        # Backward compatibility for local dev
+        candidate_dirs.append(project_root)
+
+        for directory in candidate_dirs:
+            path = directory / filename
+            if path.exists():
+                return path
+
+        # Nothing found; return the preferred path (so callers can report a helpful error)
+        return candidate_dirs[0] / filename
 
     def __repr__(self) -> str:
         """String representation for debugging."""

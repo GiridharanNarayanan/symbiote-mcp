@@ -33,8 +33,9 @@ COPY --from=model-builder /root/.cache/huggingface /root/.cache/huggingface
 
 # Copy application code
 COPY src/ /app/src/
-COPY venom_personality.md /app/
-COPY venom_personality_v2.md /app/
+
+# Copy personality assets (expected to come from a private submodule at ./personalities)
+COPY personalities/ /app/personalities/
 
 # Create data directory for ChromaDB
 RUN mkdir -p /app/data
@@ -49,6 +50,7 @@ ENV CHROMADB_PATH=/app/data
 ENV EMBEDDING_MODEL=all-MiniLM-L6-v2
 ENV COLLECTION_NAME=venom_memories
 ENV VENOM_PERSONALITY=default
+ENV PERSONALITY_DIR=/app/personalities
 
 # Run the server
 CMD ["python", "-m", "src.server"]

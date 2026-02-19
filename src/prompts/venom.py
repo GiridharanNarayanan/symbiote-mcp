@@ -33,7 +33,11 @@ class VenomPrompt:
         if self._content is None:
             if not self.personality_file_path.exists():
                 raise FileNotFoundError(
-                    f"Personality file not found: {self.personality_file_path}"
+                    "Personality file not found: "
+                    f"{self.personality_file_path}. "
+                    "If you're using a private personalities submodule, ensure it's initialized "
+                    "(e.g., `git submodule update --init --recursive`) and that PERSONALITY_DIR "
+                    "is set if the files are not under ./personalities/."
                 )
 
             self._content = self.personality_file_path.read_text(encoding="utf-8")
