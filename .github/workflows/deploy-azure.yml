@@ -18,11 +18,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          # Required if the personalities submodule is private.
-          # Create a fine-scoped PAT with read access to that repo and store it as SUBMODULE_TOKEN.
-          token: ${{ secrets.SUBMODULE_TOKEN || github.token }}
+
+      - name: Checkout submodules
+        # The personalities submodule is expected to be private.
+        # `GITHUB_TOKEN` cannot read private repos other than the current one, so we use a PAT.
+        if: ${{ secrets.SUBMODULE_TOKEN != '' }}
+        env:
+          SUBMODULE_TOKEN: ${{ secrets.SUBMODULE_TOKEN }}
+        run: |
+          git config --global url."https://x-access-token:${SUBMODULE_TOKEN}@github.com/".insteadOf "https://github.com/"
+          git submodule update --init --recursive
+
+      - name: Verify personalities present
+        run: |
+          test -f personalities/venom_personality.md || (echo "Missing personalities/venom_personality.md. Did the private submodule checkout succeed?" && exit 1)
 
       - name: Login to Azure
         uses: azure/login@v2
