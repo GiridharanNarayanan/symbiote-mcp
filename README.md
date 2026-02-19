@@ -19,6 +19,9 @@ Symbiote is a remote MCP (Model Context Protocol) server that provides:
    git clone https://github.com/yourusername/symbiote-mcp.git
    cd symbiote-mcp
 
+   # If you use the private personalities submodule
+   git submodule update --init --recursive
+
    python3.11 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
 
@@ -39,6 +42,19 @@ Symbiote is a remote MCP (Model Context Protocol) server that provides:
    # For remote clients (SSE transport)
    python -m src.server
    ```
+
+### Private Personalities (Recommended)
+
+This repo supports keeping `venom_personality*.md` in a private git submodule (or a mounted secret) so they are not published publicly.
+
+- Default behavior: the server looks in `./personalities/` first.
+- Override with `PERSONALITY_DIR=/absolute/or/relative/path`.
+
+If you see "Personality file not found", initialize submodules:
+
+```bash
+git submodule update --init --recursive
+```
 
 4. **Test the server**:
    ```bash

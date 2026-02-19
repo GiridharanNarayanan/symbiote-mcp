@@ -1,0 +1,3 @@
+[submodule "personalities"]
+	path = personalities
+	url = https://github.com/GiridharanNarayanan/symbiote-personalities
