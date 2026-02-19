@@ -18,6 +18,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # Required if the personalities submodule is private.
+          # Create a fine-scoped PAT with read access to that repo and store it as SUBMODULE_TOKEN.
+          token: ${{ secrets.SUBMODULE_TOKEN || github.token }}
 
       - name: Login to Azure
         uses: azure/login@v2
