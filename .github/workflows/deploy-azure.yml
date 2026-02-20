@@ -133,8 +133,15 @@ jobs:
               print(result.stderr, file=sys.stderr)
               sys.exit(result.returncode)
 
-          out   = json.loads(result.stdout)
-          vols  = out["properties"]["template"].get("volumes", [])
+          # az rest doesn't auto-poll LROs; the PATCH may return 202 Accepted with empty body.
+          # Re-fetch the app after a short delay to verify volumes are applied.
+          import time
+          time.sleep(10)
+          app_updated = json.loads(subprocess.check_output([
+              "az", "containerapp", "show",
+              "--name", app_name, "--resource-group", resource_group, "-o", "json",
+          ]))
+          vols = app_updated["properties"]["template"].get("volumes") or []
           print(f"✓ Volume applied: {json.dumps(vols)}")
           PYEOF
 
