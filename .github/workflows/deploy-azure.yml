@@ -100,19 +100,24 @@ jobs:
           sub_id   = app["id"].split("/")[2]
           template = app["properties"]["template"]
 
-          # 3. Set volume definition
+          # 3. Strip fields unsupported by the 2024-03-01 API version
+          scale = template.get("scale") or {}
+          scale.pop("cooldownPeriod", None)
+          scale.pop("pollingInterval", None)
+
+          # 4. Set volume definition
           template["volumes"] = [
               {"name": "chromadb-volume", "storageType": "AzureFile", "storageName": "chromadb-storage"}
           ]
 
-          # 4. Add volumeMount to the container (idempotent)
+          # 5. Add volumeMount to the container (idempotent)
           for c in template.get("containers", []):
               if c["name"] == app_name:
                   mounts = [m for m in (c.get("volumeMounts") or []) if m.get("mountPath") != "/app/data"]
                   mounts.append({"volumeName": "chromadb-volume", "mountPath": "/app/data"})
                   c["volumeMounts"] = mounts
 
-          # 5. PATCH via REST API
+          # 6. PATCH via REST API
           url = (f"https://management.azure.com/subscriptions/{sub_id}"
                  f"/resourceGroups/{resource_group}"
                  f"/providers/Microsoft.App/containerApps/{app_name}"
