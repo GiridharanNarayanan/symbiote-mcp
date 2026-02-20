@@ -62,17 +62,76 @@ jobs:
           docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
 
-      - name: Mount persistent volume on Container Apps environment
-        # Ensures the Azure Files storage link is always up-to-date (idempotent).
+      - name: Attach persistent volume to container app template
+        # Sets volumes + volumeMounts on the app template BEFORE the new revision is created,
+        # so the revision inherits the mount. Idempotent — safe to re-run on every deploy.
+        env:
+          CONTAINER_APP_NAME: ${{ env.CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
+          STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+          STORAGE_ACCOUNT_KEY: ${{ secrets.STORAGE_ACCOUNT_KEY }}
+          ACA_ENVIRONMENT_NAME: ${{ secrets.ACA_ENVIRONMENT_NAME }}
         run: |
-          az containerapp env storage set \
-            --name ${{ secrets.ACA_ENVIRONMENT_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --storage-name chromadb-storage \
-            --azure-file-account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} \
-            --azure-file-account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} \
-            --azure-file-share-name chromadb-data \
-            --access-mode ReadWrite
+          python3 << 'PYEOF'
+          import subprocess, json, sys, os
+
+          app_name      = os.environ["CONTAINER_APP_NAME"]
+          resource_group = os.environ["RESOURCE_GROUP"]
+          storage_name  = os.environ["STORAGE_ACCOUNT_NAME"]
+          storage_key   = os.environ["STORAGE_ACCOUNT_KEY"]
+          aca_env       = os.environ["ACA_ENVIRONMENT_NAME"]
+
+          # 1. Ensure the Azure Files share is registered with the ACA environment (idempotent)
+          subprocess.run([
+              "az", "containerapp", "env", "storage", "set",
+              "--name", aca_env, "--resource-group", resource_group,
+              "--storage-name", "chromadb-storage",
+              "--azure-file-account-name", storage_name,
+              "--azure-file-account-key", storage_key,
+              "--azure-file-share-name", "chromadb-data",
+              "--access-mode", "ReadWrite",
+          ], check=True, stdout=subprocess.DEVNULL)
+
+          # 2. Get current app template
+          app = json.loads(subprocess.check_output([
+              "az", "containerapp", "show",
+              "--name", app_name, "--resource-group", resource_group, "-o", "json",
+          ]))
+          sub_id   = app["id"].split("/")[2]
+          template = app["properties"]["template"]
+
+          # 3. Set volume definition
+          template["volumes"] = [
+              {"name": "chromadb-volume", "storageType": "AzureFile", "storageName": "chromadb-storage"}
+          ]
+
+          # 4. Add volumeMount to the container (idempotent)
+          for c in template.get("containers", []):
+              if c["name"] == app_name:
+                  mounts = [m for m in (c.get("volumeMounts") or []) if m.get("mountPath") != "/app/data"]
+                  mounts.append({"volumeName": "chromadb-volume", "mountPath": "/app/data"})
+                  c["volumeMounts"] = mounts
+
+          # 5. PATCH via REST API
+          url = (f"https://management.azure.com/subscriptions/{sub_id}"
+                 f"/resourceGroups/{resource_group}"
+                 f"/providers/Microsoft.App/containerApps/{app_name}"
+                 f"?api-version=2024-03-01")
+          body = json.dumps({"properties": {"template": template}})
+
+          result = subprocess.run(
+              ["az", "rest", "--method", "PATCH", "--url", url,
+               "--headers", "Content-Type=application/json", "--body", body],
+              capture_output=True, text=True,
+          )
+          if result.returncode != 0:
+              print(result.stderr, file=sys.stderr)
+              sys.exit(result.returncode)
+
+          out   = json.loads(result.stdout)
+          vols  = out["properties"]["template"].get("volumes", [])
+          print(f"✓ Volume applied: {json.dumps(vols)}")
+          PYEOF
 
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
@@ -89,11 +148,3 @@ jobs:
             COLLECTION_NAME=${{ vars.COLLECTION_NAME || 'venom_memories' }}
             EMBEDDING_MODEL=${{ vars.EMBEDDING_MODEL || 'all-MiniLM-L6-v2' }}
             CHROMADB_PATH=/app/data
-
-      - name: Attach persistent volume to container
-        # Mounts the Azure Files share at /app/data so ChromaDB data survives redeploys.
-        run: |
-          az containerapp update \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --storage-mount "chromadb-storage:storage-type=AzureFile,account-name=${{ secrets.STORAGE_ACCOUNT_NAME }},share-name=chromadb-data,access-mode=ReadWrite,mount-path=/app/data"
