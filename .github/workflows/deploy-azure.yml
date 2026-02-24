@@ -160,3 +160,4 @@ jobs:
             COLLECTION_NAME=${{ vars.COLLECTION_NAME || 'venom_memories' }}
             EMBEDDING_MODEL=${{ vars.EMBEDDING_MODEL || 'all-MiniLM-L6-v2' }}
             CHROMADB_PATH=/app/data
+            ICON_URL=${{ vars.ICON_URL || '' }}

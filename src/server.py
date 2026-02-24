@@ -81,18 +81,17 @@ async def lifespan(app: FastAPI):
         "anything the user wants or would want the AI to remember for future conversations. "
         "spawn_venom returns personality context (read-only)."
     )
-    # Venom symbiote icon - use hosted URL for better client compatibility
-    # The icon is served from /icon.svg endpoint
-    icon_url = os.getenv("ICON_URL", "https://REDACTED.azurecontainerapps.io/icon.svg")
+    # Venom symbiote icon - set ICON_URL env var to the hosted /icon.svg endpoint
+    icon_url = os.getenv("ICON_URL", "")
     venom_icon = types.Icon(
         src=icon_url,
         mimeType="image/svg+xml",
-    )
+    ) if icon_url else None
     mcp_server = Server(
         "symbiote-mcp",
         version="1.0.0",
         instructions=server_instructions,
-        icons=[venom_icon],
+        icons=[venom_icon] if venom_icon else [],
     )
 
     # Register MCP prompts
@@ -326,17 +325,17 @@ async def run_stdio():
         "anything the user wants or would want the AI to remember for future conversations. "
         "spawn_venom returns personality context (read-only)."
     )
-    # Venom symbiote icon - use hosted URL for better client compatibility
-    icon_url = os.getenv("ICON_URL", "https://REDACTED.azurecontainerapps.io/icon.svg")
+    # Venom symbiote icon - set ICON_URL env var to the hosted /icon.svg endpoint
+    icon_url = os.getenv("ICON_URL", "")
     venom_icon = types.Icon(
         src=icon_url,
         mimeType="image/svg+xml",
-    )
+    ) if icon_url else None
     mcp_server = Server(
         "symbiote-mcp",
         version="1.0.0",
         instructions=server_instructions,
-        icons=[venom_icon],
+        icons=[venom_icon] if venom_icon else [],
     )
 
     # Register handlers (same as FastAPI)
