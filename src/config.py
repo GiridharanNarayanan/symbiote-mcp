@@ -82,9 +82,6 @@ class Config:
         # Conventional location for private submodule assets
         candidate_dirs.append(project_root / "personalities")
 
-        # Local dev: files may live under src/personalities/ (gitignored, not committed)
-        candidate_dirs.append(project_root / "src" / "personalities")
-
         # Backward compatibility for local dev
         candidate_dirs.append(project_root)
 
