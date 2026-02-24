@@ -62,3 +62,5 @@ docs/
 # Personality markdown files (keep private; provide via submodule or mounted secret)
 venom_personality.md
 venom_personality_v2.md
+src/personalities/venom_personality.md
+src/personalities/venom_personality_v2.md
